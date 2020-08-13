@@ -1,0 +1,77 @@
+//记得引用类库
+
+//实例化
+$spreadsheet = new Spreadsheet();
+
+
+ 
+        $spreadsheet->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'ID')
+            ->setCellValue('B1', '药品名称')
+            ->setCellValue('C1', '商品名称')
+            ->setCellValue('D1', '通用名称');
+            //自行增加
+       
+
+ 
+        $spreadsheet->getActiveSheet()->setTitle('登陆日志');
+        $i = 2;
+        foreach ($drug_list as $rs) {
+     
+            $spreadsheet->getActiveSheet()
+                ->setCellValue('A' . $i, $rs['id'])
+                ->setCellValue('B' . $i, $rs['drug_name'])
+                ->setCellValue('C' . $i, $rs['commodity_name'])
+                ->setCellValue('D' . $i, $rs['currency_name']);
+                //自行增加
+
+            $i++;
+        }
+
+ 
+        $spreadsheet->getActiveSheet()
+            ->getColumnDimension('A')
+            ->setWidth(15);
+        $spreadsheet->getActiveSheet()
+            ->getColumnDimension('B')
+            ->setWidth(15);
+        $spreadsheet->getActiveSheet()
+            ->getColumnDimension('C')
+            ->setWidth(15);
+        $spreadsheet->getActiveSheet()
+            ->getColumnDimension('D')
+            ->setWidth(15);
+   //自行增加
+ 
+        $spreadsheet->getActiveSheet()->getStyle('A1:F' . $i)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('C2:C' . $i)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+ 
+        $spreadsheet->setActiveSheetIndex(0);
+
+        return exportExcel($spreadsheet, 'xls', '药品信息');
+        
+        //exportExcel导出方法推荐封装于公共文件中直接调用
+       
+        //代码附上
+        function exportExcel($spreadsheet, $format = 'xls', $savename = 'export') {
+    if (!$spreadsheet) return false;
+    if ($format == 'xls') {
+        //输出Excel03版本
+        header('Content-Type:application/vnd.ms-excel');
+        $class = "\PhpOffice\PhpSpreadsheet\Writer\Xls";
+    } elseif ($format == 'xlsx') {
+        //输出07Excel版本
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $class = "\PhpOffice\PhpSpreadsheet\Writer\Xlsx";
+    }
+    //输出名称
+    header('Content-Disposition: attachment;filename="'.$savename.'.'.$format.'"');
+    //禁止缓存
+    header('Cache-Control: max-age=0');
+    $writer = new $class($spreadsheet);
+    $filePath = env('runtime_path')."temp/".time().microtime(true).".tmp";
+    $writer->save($filePath);
+    readfile($filePath);
+    unlink($filePath);
+}
+        
