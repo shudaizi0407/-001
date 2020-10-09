@@ -3,6 +3,8 @@
  * 关于微信退款的说明
  * 1.微信退款要求必传证书，需要到https://pay.weixin.qq.com 账户中心->账户设置->API安全->下载证书，证书路径在第117行附近和120行附近修改
  * 2.错误码参照 ：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_4
+ * ！！！！！！！！！！！！！！！！！！！！！！特别注意！！！！！踩过的坑
+ * 3.使用此接口返回数据发送的数据必须为XML格式   注意接口证书
  */
 header('Content-type:text/html; Charset=utf-8');
 $mchid = 'xxxxx';          //微信支付商户号 PartnerID 通过微信支付商户资料审核后邮件发送
